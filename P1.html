@@ -11866,7 +11866,7 @@ div#notebook {
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x11422de80&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x11423aeb8&gt;</pre>
 </div>
 
 </div>
@@ -13708,24 +13708,32 @@ mGfWfHgWZQAAAABJRU5ErkJggg==
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TODO: Build your pipeline that will draw lane lines on the test_images</span>
 <span class="c1"># then save them to the test_images directory.</span>
-<span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.jpg&#39;</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">+</span> <span class="s1">&#39;.jpg&#39;</span><span class="p">)</span>
+            <span class="n">mpimg</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">out_filename</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+        
     <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">gray</span> <span class="o">=</span> <span class="n">grayscale</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">save_image</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="s1">&#39;_1_Gray&#39;</span><span class="p">)</span>
     <span class="n">blurred</span> <span class="o">=</span> <span class="n">gaussian_blur</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">save_image</span><span class="p">(</span><span class="n">blurred</span><span class="p">,</span> <span class="s1">&#39;_2_Blurred&#39;</span><span class="p">)</span>
     <span class="n">edges</span> <span class="o">=</span> <span class="n">canny</span><span class="p">(</span><span class="n">blurred</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">save_image</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="s1">&#39;_3_Edges&#39;</span><span class="p">)</span>
     <span class="n">corners</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="n">height</span><span class="p">),</span> <span class="p">(</span><span class="n">width</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span><span class="n">height</span><span class="o">*</span><span class="mf">0.57</span><span class="p">),</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)]</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
     <span class="n">masked</span> <span class="o">=</span> <span class="n">region_of_interest</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">corners</span><span class="p">)</span>
+    <span class="n">save_image</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="s1">&#39;_4_Masked&#39;</span><span class="p">)</span>
     
     <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span>
     <span class="n">threshold</span><span class="p">,</span> <span class="n">min_line_len</span><span class="p">,</span> <span class="n">max_line_gap</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">6</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">hough_lines</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">min_line_len</span><span class="p">,</span> <span class="n">max_line_gap</span><span class="p">)</span>
     <span class="n">annotated</span> <span class="o">=</span> <span class="n">weighted_img</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">annotated</span>
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">annotated</span>
 
 <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
     <span class="n">mpimg</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">result</span>
 </pre></div>
@@ -60474,7 +60482,7 @@ imageio.plugins.ffmpeg.download()</code></pre>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|█████████▉| 221/222 [00:02&lt;00:00, 94.83it/s]
+<pre>100%|█████████▉| 221/222 [00:02&lt;00:00, 83.99it/s]
 </pre>
 </div>
 </div>
@@ -60484,8 +60492,8 @@ imageio.plugins.ffmpeg.download()</code></pre>
 <pre>[MoviePy] Done.
 [MoviePy] &gt;&gt;&gt;&gt; Video ready: test_videos_output/solidWhiteRight.mp4 
 
-CPU times: user 2.08 s, sys: 578 ms, total: 2.66 s
-Wall time: 2.71 s
+CPU times: user 2.11 s, sys: 520 ms, total: 2.63 s
+Wall time: 3.03 s
 </pre>
 </div>
 </div>
@@ -60590,7 +60598,7 @@ Wall time: 2.71 s
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|█████████▉| 681/682 [00:07&lt;00:00, 85.84it/s]
+<pre>100%|█████████▉| 681/682 [00:08&lt;00:00, 76.35it/s]
 </pre>
 </div>
 </div>
@@ -60600,8 +60608,8 @@ Wall time: 2.71 s
 <pre>[MoviePy] Done.
 [MoviePy] &gt;&gt;&gt;&gt; Video ready: test_videos_output/solidYellowLeft.mp4 
 
-CPU times: user 6.83 s, sys: 1.6 s, total: 8.43 s
-Wall time: 8.34 s
+CPU times: user 6.8 s, sys: 1.47 s, total: 8.27 s
+Wall time: 8.62 s
 </pre>
 </div>
 </div>
@@ -60695,7 +60703,7 @@ Wall time: 8.34 s
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 251/251 [00:06&lt;00:00, 39.13it/s]
+<pre>100%|██████████| 251/251 [00:08&lt;00:00, 28.84it/s]
 </pre>
 </div>
 </div>
@@ -60705,8 +60713,8 @@ Wall time: 8.34 s
 <pre>[MoviePy] Done.
 [MoviePy] &gt;&gt;&gt;&gt; Video ready: test_videos_output/challenge.mp4 
 
-CPU times: user 4.68 s, sys: 1.25 s, total: 5.94 s
-Wall time: 7.25 s
+CPU times: user 5.86 s, sys: 1.66 s, total: 7.52 s
+Wall time: 9.58 s
 </pre>
 </div>
 </div>
